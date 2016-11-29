@@ -12,6 +12,8 @@ S1330-R-Jayadeep
 
 using namespace std;
 
+#define window_size 5
+
 class Socket{
 	map<int,char> data;
 public:
@@ -39,23 +41,24 @@ int main(){
 	Socket socket;
 	int ack;
 	queue<pair<int,char>> data;
-	for(int i=0;i<input.length();i++){
-		data.push(pair<int,char>(i,input[i]));
-	}
-	while(!data.empty()){
-		pair<int,char> d = data.front();
-		cout<<"Sending "<<d.second<<" : "<<d.first<<endl;
-		ack = socket.receive(d.second,d.first);
-		data.pop();
-		if(ack!=-1){
-			cout<<"Received ack : "<<ack<<endl;
+	for(int i=0;i<input.length();i+=window_size){
+		for(int j=i;j<i+window_size&&j<input.length();j++)
+			data.push(pair<int,char>(j,input[j]));
+		while(!data.empty()){
+			pair<int,char> d = data.front();
+			cout<<"Sending "<<d.second<<" : "<<d.first<<endl;
+			ack = socket.receive(d.second,d.first);
+			data.pop();
+			if(ack!=-1){
+				cout<<"Received ack : "<<ack<<endl;
+			}
+			else{
+				cout<<"Not received ack : "<<ack<<endl;
+				data.push(d);
+			}
 		}
-		else{
-			cout<<"Not received ack : "<<ack<<endl;
-			data.push(d);
-		}
+		cout<<"Received : "+socket.receivedData()<<endl;
 	}
-	cout<<"Received : "+socket.receivedData()<<endl;
 	return 0;
 }
 
@@ -95,11 +98,8 @@ Received ack : 7
 Received : helloworld
 
 
-*************************************************/
-
-
-
 
 Result
 --------
 Program is executed and output is verified
+*************************************************/
