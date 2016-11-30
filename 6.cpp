@@ -9,6 +9,7 @@
 #include <pthread.h>
 #include <semaphore.h>
 #include <string>
+
 using namespace std;
 sem_t s;
 sem_t fork[5];
@@ -21,8 +22,8 @@ void *eatAndThink(void * arg){
   sem_wait(fork+(i+1)%5);
   cout<<"phil "+to_string(i)+" eating"+"\n";
   sem_post(fork+(i+1)%5);
-  cout<<"phil "+to_string(i)+" thinking"+"\n";
   sem_post(fork+i);
+  cout<<"phil "+to_string(i)+" thinking"+"\n";
   sem_post(&s);
   pthread_exit(NULL);
 }
